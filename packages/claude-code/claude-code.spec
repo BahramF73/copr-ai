@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 
 Name:           claude-code
-Version:        2.1.133
+Version:        2.1.137
 Release:        1%{?dist}
 Summary:        Anthropic Claude Code terminal assistant
 
@@ -39,6 +39,9 @@ install -Dpm0755 %{SOURCE2} %{buildroot}%{_bindir}/claude
 %{_bindir}/claude
 
 %changelog
+* Sat May 09 2026 Codex Automation <noreply@users.noreply.github.com> - 2.1.137-1
+- Update to v2.1.137
+
 * Fri May 08 2026 Codex Automation <noreply@users.noreply.github.com> - 2.1.133-1
 - Update to v2.1.133
 
