@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 
 Name:           opencode
-Version:        1.14.46
+Version:        1.14.48
 Release:        1%{?dist}
 Summary:        Open source AI coding agent for the terminal
 
@@ -38,6 +38,9 @@ install -Dpm0755 opencode %{buildroot}%{_bindir}/opencode
 %{_bindir}/opencode
 
 %changelog
+* Mon May 11 2026 Codex Automation <noreply@users.noreply.github.com> - 1.14.48-1
+- Update to v1.14.48
+
 * Sun May 10 2026 Codex Automation <noreply@users.noreply.github.com> - 1.14.46-1
 - Update to v1.14.46
 
