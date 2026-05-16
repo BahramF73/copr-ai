@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 
 Name:           wacli
-Version:        0.8.1
+Version:        0.9.1
 Release:        1%{?dist}
 Summary:        WhatsApp CLI for sync, search, and send
 
@@ -45,6 +45,9 @@ install -Dpm0755 wacli %{buildroot}%{_bindir}/wacli
 %{_bindir}/wacli
 
 %changelog
+* Sat May 16 2026 Codex Automation <noreply@users.noreply.github.com> - 0.9.1-1
+- Update to v0.9.1
+
 * Fri May 08 2026 Codex Automation <noreply@users.noreply.github.com> - 0.8.1-1
 - Update to v0.8.1
 
