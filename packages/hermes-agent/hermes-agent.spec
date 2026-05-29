@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 
 Name:           hermes-agent
-Version:        0.14.0
+Version:        0.15.1
 Release:        1%{?dist}
 Summary:        Self-improving AI agent by Nous Research
 
@@ -123,6 +123,9 @@ test -d %{buildroot}%{_datadir}/%{name}/optional-skills
 %{_datadir}/%{name}
 
 %changelog
+* Fri May 29 2026 Codex Automation <noreply@users.noreply.github.com> - 0.15.1-1
+- Update to v0.15.1
+
 * Sun May 17 2026 Codex Automation <noreply@users.noreply.github.com> - 0.14.0-1
 - Update to v0.14.0
 
