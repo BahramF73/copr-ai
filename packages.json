@@ -22,7 +22,7 @@
       "project": "gogcli",
       "subdir": "packages/gogcli",
       "spec": "gogcli.spec",
-      "upstream_url": "https://github.com/steipete/gogcli.git",
+      "upstream_url": "https://github.com/openclaw/gogcli.git",
       "tag_prefix": "v"
     },
     {
@@ -31,7 +31,7 @@
       "project": "wacli",
       "subdir": "packages/wacli",
       "spec": "wacli.spec",
-      "upstream_url": "https://github.com/steipete/wacli.git",
+      "upstream_url": "https://github.com/openclaw/wacli.git",
       "tag_prefix": "v"
     },
     {

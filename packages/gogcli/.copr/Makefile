@@ -4,7 +4,7 @@ SHELL := /bin/sh
 
 srpm:
 	dnf -y install git golang rpm-build
-	UPSTREAM_URL="https://github.com/steipete/gogcli.git" \
+	UPSTREAM_URL="https://github.com/openclaw/gogcli.git" \
 	UPSTREAM_TAG_PREFIX="v" \
 	PACKAGE_NAME="gogcli" \
 	GO_VERSION_COMPAT="1.25" \

@@ -6,7 +6,7 @@ Release:        2%{?dist}
 Summary:        Google Workspace CLI for the terminal
 
 License:        MIT
-URL:            https://github.com/steipete/gogcli
+URL:            https://github.com/openclaw/gogcli
 Source0:        %{name}-%{version}.tar.gz
 Source1:        %{name}-%{version}-vendor.tar.gz
 

@@ -10,7 +10,7 @@ EOF
 spec=""
 outdir=""
 package_name="${PACKAGE_NAME:-gogcli}"
-upstream_url="${UPSTREAM_URL:-https://github.com/steipete/gogcli.git}"
+upstream_url="${UPSTREAM_URL:-https://github.com/openclaw/gogcli.git}"
 upstream_tag_prefix="${UPSTREAM_TAG_PREFIX:-v}"
 go_version_compat="${GO_VERSION_COMPAT:-}"
 

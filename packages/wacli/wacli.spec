@@ -6,7 +6,7 @@ Release:        1%{?dist}
 Summary:        WhatsApp CLI for sync, search, and send
 
 License:        MIT
-URL:            https://github.com/steipete/wacli
+URL:            https://github.com/openclaw/wacli
 Source0:        %{name}-%{version}.tar.gz
 Source1:        %{name}-%{version}-vendor.tar.gz
 

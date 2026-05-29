@@ -54,8 +54,8 @@ The workflow runs daily at `00:15` UTC, on pushes to `main`, and can also be sta
 
 ## How the workflow behaves
 
-1. Checks the latest upstream `v*` tag from `https://github.com/steipete/gogcli.git`.
-2. Checks the latest upstream `v*` tag from `https://github.com/steipete/wacli.git`.
+1. Checks the latest upstream `v*` tag from `https://github.com/openclaw/gogcli.git`.
+2. Checks the latest upstream `v*` tag from `https://github.com/openclaw/wacli.git`.
 3. Checks the latest upstream `rust-v*` tag from `https://github.com/openai/codex.git`.
 4. Checks the latest upstream `v*` tag from `https://github.com/anomalyco/opencode.git`.
 5. Checks the latest upstream `v*` tag from `https://github.com/ollama/ollama.git`.
