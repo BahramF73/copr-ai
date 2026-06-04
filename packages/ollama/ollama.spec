@@ -3,8 +3,8 @@
 %global __requires_exclude_from ^%{_prefix}/lib/ollama/.*$
 
 Name:           ollama
-Version:        0.30.2
-Release:        2%{?dist}
+Version:        0.30.4
+Release:        1%{?dist}
 Summary:        Local LLM runner and API server
 
 License:        MIT
@@ -56,6 +56,9 @@ done
 %{_prefix}/lib/ollama/
 
 %changelog
+* Thu Jun 04 2026 Codex Automation <noreply@users.noreply.github.com> - 0.30.4-1
+- Update to v0.30.4
+
 * Thu Jun 04 2026 Codex Automation <noreply@users.noreply.github.com> - 0.30.2-2
 - Normalize bundled shared-library RUNPATHs
 
