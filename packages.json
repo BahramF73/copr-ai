@@ -59,7 +59,8 @@
       "subdir": "packages/ollama",
       "spec": "ollama.spec",
       "upstream_url": "https://github.com/ollama/ollama.git",
-      "tag_prefix": "v"
+      "tag_prefix": "v",
+      "version_source": "github_release"
     },
     {
       "chroot_arches": ["aarch64", "x86_64"],

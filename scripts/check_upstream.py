@@ -6,6 +6,7 @@ import argparse
 import asyncio
 import datetime as dt
 import json
+import os
 import pathlib
 import re
 import sys
@@ -47,10 +48,15 @@ def version_key(version: str) -> tuple[int, ...]:
     return tuple(int(part) for part in version.split("."))
 
 
-def github_raw_url(upstream_url: str, tag: str, path: str) -> str:
+def github_repo_path(upstream_url: str) -> str:
     repo_path = upstream_url.removeprefix("https://github.com/").removesuffix(".git")
     if repo_path == upstream_url:
-        raise RuntimeError(f"unsupported upstream URL for raw fetch: {upstream_url}")
+        raise RuntimeError(f"unsupported upstream URL for GitHub API: {upstream_url}")
+    return repo_path
+
+
+def github_raw_url(upstream_url: str, tag: str, path: str) -> str:
+    repo_path = github_repo_path(upstream_url)
     return f"https://raw.githubusercontent.com/{repo_path}/{urllib.parse.quote(tag, safe='')}/{path}"
 
 
@@ -114,12 +120,52 @@ async def latest_pyproject_version(upstream_url: str, tag: str) -> str:
     return await asyncio.to_thread(fetch)
 
 
+async def latest_github_release_version(
+    upstream_url: str,
+    tag_prefix: str,
+    tag_version_pattern: str,
+) -> str:
+    # Use the published-release tag rather than the newest git tag: projects like
+    # ollama tag a version before publishing the release (and its prebuilt binary
+    # assets), so bumping on the tag alone produces an SRPM whose asset downloads
+    # 404. The releases/latest endpoint only ever returns a published, non-draft,
+    # non-prerelease release, which is guaranteed to carry its assets.
+    tag_re = re.compile(rf"^{re.escape(tag_prefix)}{tag_version_pattern}$")
+
+    def fetch() -> str:
+        repo_path = github_repo_path(upstream_url)
+        request = urllib.request.Request(
+            f"https://api.github.com/repos/{repo_path}/releases/latest",
+            headers={
+                "User-Agent": "gogcli-copr-check-upstream/1.0",
+                "Accept": "application/vnd.github+json",
+            },
+        )
+        token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+        if token:
+            request.add_header("Authorization", f"Bearer {token}")
+        with urllib.request.urlopen(request, timeout=DEFAULT_HTTP_TIMEOUT) as response:
+            release = json.load(response)
+        tag = release.get("tag_name", "")
+        match = tag_re.match(tag)
+        if not match:
+            raise RuntimeError(
+                f"latest GitHub release tag {tag!r} for {upstream_url} does not "
+                f"match {tag_prefix!r}{tag_version_pattern}"
+            )
+        return match.group(1)
+
+    return await asyncio.to_thread(fetch)
+
+
 async def latest_upstream_version(
     upstream_url: str,
     tag_prefix: str,
     tag_version_pattern: str,
     version_source: str,
 ) -> str:
+    if version_source == "github_release":
+        return await latest_github_release_version(upstream_url, tag_prefix, tag_version_pattern)
     tag, tag_version = await latest_upstream_tag(upstream_url, tag_prefix, tag_version_pattern)
     if version_source == "tag":
         return tag_version
@@ -278,7 +324,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--node-major", type=int)
     parser.add_argument("--tag-prefix", default="v")
     parser.add_argument("--tag-version-pattern", default=r"(\d+\.\d+\.\d+)")
-    parser.add_argument("--version-source", choices=("tag", "pyproject"), default="tag")
+    parser.add_argument(
+        "--version-source",
+        choices=("tag", "pyproject", "github_release"),
+        default="tag",
+    )
     parser.add_argument("--update", action="store_true")
     parser.add_argument("--github-output", type=pathlib.Path)
     parser.add_argument("--jobs", type=int, default=DEFAULT_JOBS)
