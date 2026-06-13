@@ -4,7 +4,7 @@
 
 Name:           nodejs25-caged
 Version:        25.9.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Node.js 25 built with V8 pointer compression
 
 License:        MIT
@@ -61,6 +61,13 @@ enabled.
 # AL2023: use the co-installable gcc 14 (default gcc 11 / clang 15 are too old).
 export CC=gcc14-gcc CXX=gcc14-g++
 %else
+%if 0%{?azl}
+# Azure Linux 3 ships clang 18, which rejects V8 25's regexp bytecode tables
+# with "call to immediate function ... is not a constant expression" (a stricter
+# consteval diagnostic that newer clang on Fedora/EL does not raise). Its default
+# gcc 13 builds Node 25's C++20 deps fine, so force gcc here.
+export CC=gcc CXX=g++
+%else
 # Elsewhere prefer clang when it's new enough (>= 16), else fall back to gcc.
 # Detect the major version via the predefined macro rather than
 # `clang -dumpversion`, which has historically reported a faked gcc-compat
@@ -72,6 +79,7 @@ else
     export CC=gcc CXX=g++
 fi
 %endif
+%endif
 %{?set_build_flags}
 
 %if 0%{?amzn}
@@ -79,7 +87,7 @@ fi
 # provide a matching annobin plugin in gcc14's plugin path.
 for _var in CFLAGS CXXFLAGS FFLAGS FCFLAGS LDFLAGS; do
     eval "_value=\${${_var}:-}"
-    _value="$(printf '%s' "$_value" | sed 's@-specs=/usr/lib/rpm/redhat-annobin-cc1@@g')"
+    _value="$(printf '%s' "$_value" | sed -E 's@ *-specs=[^ ]*annobin[^ ]*@@g')"
     export "${_var}=${_value}"
 done
 %endif
@@ -153,6 +161,16 @@ npm_dir="%{buildroot}%{_prefix}/lib/node_modules/npm/bin"
 %{_mandir}/man1/node.1*
 
 %changelog
+* Sat Jun 13 2026 matt haigh <matthaigh27@gmail.com> - 25.9.0-6
+- Fix the annobin-spec strip on Amazon Linux: the sed targeted
+  /usr/lib/rpm/redhat-annobin-cc1 but the real flag is
+  /usr/lib/rpm/redhat/redhat-annobin-cc1, so the strip was a no-op and gcc14
+  still failed with "inaccessible plugin file plugin/annobin.so". Match any
+  -specs=*annobin* token instead
+- Build with gcc on Azure Linux 3: its clang 18 rejects V8 25's regexp consteval
+  bytecode tables ("call to immediate function ... is not a constant
+  expression"); gcc 13 compiles the C++20 deps cleanly
+
 * Fri Jun 12 2026 matt haigh <matthaigh27@gmail.com> - 25.9.0-5
 - Re-establish the libatomic shim in %%install: rpm runs each section in its own
   shell, and `make install` re-links the node_js2c host tool, so the %%build env
