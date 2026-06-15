@@ -2,9 +2,15 @@
 %global nodejs_major 25
 %global npm_version 11.12.1
 
+# V8/cppgc bundles hand-written assembly (e.g. the PushAllRegistersAndIterateStack
+# stack-scanning trampoline) that breaks under the distro-default -flto: gcc's LTO
+# ltrans stage re-emits the asm symbol across partitions and fails with
+# "symbol ... is already defined". V8 does its own optimization; disable RPM LTO.
+%global _lto_cflags %{nil}
+
 Name:           nodejs25-caged
 Version:        25.9.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Node.js 25 built with V8 pointer compression
 
 License:        MIT
@@ -92,6 +98,24 @@ for _var in CFLAGS CXXFLAGS FFLAGS FCFLAGS LDFLAGS; do
 done
 %endif
 
+# Belt-and-suspenders LTO scrub. V8/cppgc bundles hand-written assembly (the
+# PushAllRegistersAndIterateStack stack-scanning trampoline) that breaks under
+# -flto: gcc's LTO ltrans partitioning stage re-emits the asm symbol across
+# partitions and fails the assembler with "symbol ... is already defined". The
+# %%global _lto_cflags %%{nil} above removes the flag where it comes from RPM's
+# _lto_cflags (Amazon Linux 2023), but in case any -flto reaches the effective
+# flags by another path, strip every -flto/-ffat-lto-objects token here too.
+# This is a no-op when no LTO flag is present (e.g. the clang chroots and Azure
+# Linux 3, whose default flags carry no -flto). Keep in sync with the %%install
+# copy, where `make install` re-links host tools in a fresh shell. The pattern
+# matches -flto, -flto=auto, -ffat-lto-objects and -fno-lto while leaving other
+# -f... flags intact.
+for _var in CFLAGS CXXFLAGS FFLAGS FCFLAGS LDFLAGS; do
+    eval "_value=\${${_var}:-}"
+    _value="$(printf '%s' "$_value" | sed -E 's@ *-f(no-)?(fat-)?lto([=-][^ ]*)?@@g')"
+    export "${_var}=${_value}"
+done
+
 # Some toolchains (notably EL's gcc-toolset ld) ship only the versioned
 # libatomic.so.1 runtime, not the unversioned libatomic.so linker symlink, so
 # Node's `-latomic` helper targets fail to link with "cannot find -latomic".
@@ -135,6 +159,16 @@ if [ -n "$atomic_lib" ]; then
     export LIBRARY_PATH="%{_builddir}/atomic-shim${LIBRARY_PATH:+:$LIBRARY_PATH}"
     export LDFLAGS="${LDFLAGS:-} -L%{_builddir}/atomic-shim"
 fi
+
+# `make install` depends on `all` and re-links host tools, so mirror the %%build
+# LTO scrub here too: strip any -flto/-ffat-lto-objects token that would
+# re-trigger the V8 cppgc "PushAllRegistersAndIterateStack already defined"
+# assembler failure. No-op when no LTO flag is present. Keep in sync with %%build.
+for _var in CFLAGS CXXFLAGS FFLAGS FCFLAGS LDFLAGS; do
+    eval "_value=\${${_var}:-}"
+    _value="$(printf '%s' "$_value" | sed -E 's@ *-f(no-)?(fat-)?lto([=-][^ ]*)?@@g')"
+    export "${_var}=${_value}"
+done
 %make_install PREFIX=%{_prefix}
 
 %check
@@ -161,6 +195,16 @@ npm_dir="%{buildroot}%{_prefix}/lib/node_modules/npm/bin"
 %{_mandir}/man1/node.1*
 
 %changelog
+* Mon Jun 15 2026 matt haigh <matthaigh27@gmail.com> - 25.9.0-7
+- Disable RPM's injected LTO (%%global _lto_cflags %%{nil}) on the gcc-using
+  chroots: V8/cppgc's hand-written push_registers asm
+  (PushAllRegistersAndIterateStack) breaks under gcc's -flto, whose ltrans
+  partitioning stage re-emits the asm symbol in more than one partition and
+  fails the assembler with "symbol `PushAllRegistersAndIterateStack' is already
+  defined". This hit amazonlinux-2023 (gcc14) and azure-linux-3 (gcc) at the
+  final link after a full compile; V8 does its own optimization so dropping the
+  distro-default -flto=auto is safe
+
 * Sat Jun 13 2026 matt haigh <matthaigh27@gmail.com> - 25.9.0-6
 - Fix the annobin-spec strip on Amazon Linux: the sed targeted
   /usr/lib/rpm/redhat-annobin-cc1 but the real flag is
