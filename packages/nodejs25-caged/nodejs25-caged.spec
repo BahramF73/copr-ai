@@ -10,7 +10,7 @@
 
 Name:           nodejs25-caged
 Version:        25.9.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Node.js 25 built with V8 pointer compression
 
 License:        MIT
@@ -168,6 +168,21 @@ if [ -n "$atomic_lib" ]; then
     export LDFLAGS="${LDFLAGS:-} -L%{_builddir}/atomic-shim"
 fi
 
+%if 0%{?amzn}
+# `make install` depends on `all` and recompiles sources in this fresh shell,
+# whose CFLAGS/CXXFLAGS carry Amazon Linux's injected annobin spec (rpm exports
+# the hardened flags into every section's environment) -- but the gcc14 packages
+# provide no matching annobin plugin, so gcc14-g++ aborts with "inaccessible
+# plugin file plugin/annobin.so". The %%build annobin strip does not carry over
+# here, so mirror it: drop every -specs=*annobin* token. Keep in sync with
+# %%build.
+for _var in CFLAGS CXXFLAGS FFLAGS FCFLAGS LDFLAGS; do
+    eval "_value=\${${_var}:-}"
+    _value="$(printf '%s' "$_value" | sed -E 's@ *-specs=[^ ]*annobin[^ ]*@@g')"
+    export "${_var}=${_value}"
+done
+%endif
+
 # `make install` depends on `all` and re-links host tools, so mirror the %%build
 # LTO scrub here too: strip any -flto/-ffat-lto-objects token that would
 # re-trigger the V8 cppgc "PushAllRegistersAndIterateStack already defined"
@@ -203,6 +218,22 @@ npm_dir="%{buildroot}%{_prefix}/lib/node_modules/npm/bin"
 %{_mandir}/man1/node.1*
 
 %changelog
+* Sat Jun 15 2026 matt haigh <matthaigh27@gmail.com> - 25.9.0-8
+- Fix amazonlinux-2023 (x86_64 and aarch64) %%install failure: `make install`
+  depends on `all` and recompiles sources in a fresh shell where the build flags
+  are re-derived WITH Amazon Linux's injected annobin spec. gcc14 provides no
+  matching annobin plugin, so the install recompile aborted with "inaccessible
+  plugin file plugin/annobin.so". The %%build section already strips
+  -specs=*annobin* but that env did not carry into %%install (only the LTO scrub
+  and libatomic shim were mirrored there). Mirror the annobin strip into
+  %%install too, kept in sync with %%build
+- Raise the per-package COPR build timeout from 43200s (12h) to 108000s (30h,
+  Copr's maximum) in packages.json for azure-linux-3-aarch64: that chroot's
+  slower aarch64 builder hit the 12h timeout still mid-%%build (compiling the
+  bundled LIEF dependency, before the V8/node link) and was killed with
+  "Copr timeout => sending INT". azure-linux-3-x86_64 succeeds, so this is
+  builder-speed/arch specific, not a build defect
+
 * Mon Jun 15 2026 matt haigh <matthaigh27@gmail.com> - 25.9.0-7
 - Fix amazonlinux-2023 link failure: disable RPM's injected LTO
   (%%global _lto_cflags %%{nil}, plus a belt-and-suspenders -flto scrub).
