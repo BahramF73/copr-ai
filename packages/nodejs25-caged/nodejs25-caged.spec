@@ -10,7 +10,7 @@
 
 Name:           nodejs25-caged
 Version:        25.9.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        Node.js 25 built with V8 pointer compression
 
 License:        MIT
@@ -47,6 +47,13 @@ Provides:       nodejs%{nodejs_major}-npm = %{npm_version}
 Provides:       nodejs%{nodejs_major}-npx = %{npm_version}
 Provides:       npm = %{npm_version}
 Provides:       npx = %{npm_version}
+
+# This package bundles its own npm and now ships /etc/npmrc, which the distro's
+# nodejs-npm subpackage also owns -- co-installing the two would hit an rpm file
+# conflict on /etc/npmrc (and on /usr/bin/npm). rpm ignores a Conflicts satisfied
+# only by the package's own Provides, so this blocks the real nodejs-npm without
+# self-conflicting on the nodejs-npm capability we provide above.
+Conflicts:      nodejs-npm
 
 ExclusiveArch:  aarch64 x86_64
 
@@ -194,6 +201,29 @@ for _var in CFLAGS CXXFLAGS FFLAGS FCFLAGS LDFLAGS; do
 done
 %make_install PREFIX=%{_prefix}
 
+# Ship the same npm distribution config as Fedora's official nodejs-npm package.
+# Node's bundled npm, with no config, derives its global prefix from the parent
+# of the node binary's directory -- i.e. %{_prefix} (/usr) -- so `npm install -g`
+# writes into the rpm-managed /usr/lib/node_modules and fails with EACCES for
+# non-root users (and would clobber package-owned files as root). The official
+# package avoids this by shipping a builtin npmrc (at the root of the npm module
+# dir) that only redirects globalconfig to /etc/npmrc, then setting the real
+# prefix to /usr/local -- the standard local-admin tree -- in that one editable
+# file. Mirror both files here so this build behaves like stock distro Node.
+cat > %{buildroot}%{_prefix}/lib/node_modules/npm/npmrc <<'EOF'
+# Distribution-level npm configuration. Do not edit; put system-wide settings in
+# the globalconfig file below (defaults to /etc/npmrc).
+# vim:set filetype=dosini:
+
+globalconfig=/etc/npmrc
+EOF
+mkdir -p %{buildroot}%{_sysconfdir}
+cat > %{buildroot}%{_sysconfdir}/npmrc <<'EOF'
+prefix=/usr/local
+python=/usr/bin/python3
+update-notifier=false
+EOF
+
 %check
 # Run node directly on the npm/npx cli scripts: their shebang is the absolute
 # install path (%{_bindir}/node), which does not exist yet at %%check time --
@@ -209,6 +239,7 @@ npm_dir="%{buildroot}%{_prefix}/lib/node_modules/npm/bin"
 %files
 %license LICENSE
 %doc README.md
+%config(noreplace) %{_sysconfdir}/npmrc
 %{_bindir}/node
 %{_bindir}/npm
 %{_bindir}/npx
@@ -218,6 +249,16 @@ npm_dir="%{buildroot}%{_prefix}/lib/node_modules/npm/bin"
 %{_mandir}/man1/node.1*
 
 %changelog
+* Wed Jun 17 2026 matt haigh <matthaigh27@gmail.com> - 25.9.0-9
+- Ship npm distribution config matching Fedora's official nodejs-npm: a builtin
+  npmrc (in the npm module dir) redirecting globalconfig to /etc/npmrc, plus
+  /etc/npmrc setting prefix=/usr/local. Without these, bundled npm derived its
+  global prefix from the node binary path (%%{_prefix}=/usr), so `npm install -g`
+  hit EACCES on the rpm-managed /usr/lib/node_modules for non-root users. Now
+  global installs land in /usr/local like stock distro Node
+- Add Conflicts: nodejs-npm so the distro npm (which also owns /etc/npmrc) cannot
+  co-install and trigger an rpm file conflict
+
 * Sat Jun 15 2026 matt haigh <matthaigh27@gmail.com> - 25.9.0-8
 - Fix amazonlinux-2023 (x86_64 and aarch64) %%install failure: `make install`
   depends on `all` and recompiles sources in a fresh shell where the build flags
