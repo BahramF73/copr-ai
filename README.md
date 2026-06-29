@@ -14,6 +14,7 @@ Each package lives in its own subdirectory under `packages/` and is built in its
 | `opencode` | [![Copr build status](https://copr.fedorainfracloud.org/coprs/sureclaw/opencode/package/opencode/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/sureclaw/opencode/package/opencode/) |
 | `ollama` | [![Copr build status](https://copr.fedorainfracloud.org/coprs/sureclaw/ollama/package/ollama/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/sureclaw/ollama/package/ollama/) |
 | `claude-code` | [![Copr build status](https://copr.fedorainfracloud.org/coprs/sureclaw/claude-code/package/claude-code/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/sureclaw/claude-code/package/claude-code/) |
+| `composio` | [![Copr build status](https://copr.fedorainfracloud.org/coprs/sureclaw/composio/package/composio/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/sureclaw/composio/package/composio/) |
 | `nodejs25-caged` | [![Copr build status](https://copr.fedorainfracloud.org/coprs/sureclaw/nodejs25-caged/package/nodejs25-caged/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/sureclaw/nodejs25-caged/package/nodejs25-caged/) |
 
 ## Packages
@@ -24,6 +25,7 @@ Each package lives in its own subdirectory under `packages/` and is built in its
 - `opencode`: repackaged from upstream Linux release binaries for `x86_64` and `aarch64`
 - `ollama`: repackaged from upstream Linux release bundles for `x86_64` and `aarch64`
 - `claude-code`: repackaged from Anthropic's native release feed (the upstream Bun single-file `claude` binary, checksum-verified against the release manifest) for `x86_64` and `aarch64`; RPM binary post-processing is disabled so the executable ships byte-for-byte
+- `composio`: repackaged from upstream `@composio/cli@*` GitHub release zips for `x86_64` and `aarch64`; the whole release tree is installed under `/usr/lib/composio` with a `/usr/bin/composio` symlink, and RPM binary post-processing is disabled so the Bun launcher ships byte-for-byte
 - `nodejs25-caged`: source-built from the official Node.js 25 source tarball with `--experimental-enable-pointer-compression`, installing the normal `node`, `npm`, and `npx` command names
 - `ai`: umbrella COPR project that enables the canonical package COPRs together
 
@@ -81,6 +83,7 @@ The workflow runs daily at `00:15` UTC, on pushes to `main`, and can also be sta
 - `opencode` uses the upstream Linux release artifacts and packages the `x86_64` baseline build so one RPM works on a wider range of Fedora systems.
 - `ollama` uses the upstream Linux release bundles and does not package the separate ROCm or JetPack add-on archives.
 - `claude-code` uses the upstream npm tarball and installs the upstream `claude` command name.
+- `composio` tracks the latest stable `@composio/cli@X.Y.Z` GitHub release tag (the `tag` version source skips the `-beta` prereleases that the `releases/latest` endpoint and other monorepo packages would otherwise surface). The upstream release zip bundles the codex ACP helper binary for every platform; the spec keeps only the one matching the build arch (the CLI selects it by `process.platform`/`process.arch` at runtime) and drops the rest, roughly halving the installed size. It is still a large package (a few hundred MB per arch).
 - `nodejs25-caged` cannot be co-installed with distro Node.js/npm packages that own the normal `/usr/bin/node`, `/usr/bin/npm`, and `/usr/bin/npx` paths.
 - `claude-code` is proprietary software distributed under Anthropic's legal terms rather than an open-source license; review those terms before publishing it in a public COPR.
 - The umbrella `ai` COPR does not rebuild packages; it only points users at the canonical per-package repos through `copr://...` runtime dependencies.

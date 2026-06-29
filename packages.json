@@ -73,6 +73,15 @@
     },
     {
       "chroot_arches": ["aarch64", "x86_64"],
+      "name": "composio",
+      "project": "composio",
+      "subdir": "packages/composio",
+      "spec": "composio.spec",
+      "upstream_url": "https://github.com/ComposioHQ/composio.git",
+      "tag_prefix": "@composio/cli@"
+    },
+    {
+      "chroot_arches": ["aarch64", "x86_64"],
       "name": "nodejs25-caged",
       "project": "nodejs25-caged",
       "subdir": "packages/nodejs25-caged",
