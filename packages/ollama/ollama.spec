@@ -4,7 +4,7 @@
 
 Name:           ollama
 Version:        0.30.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Local LLM runner and API server
 
 License:        MIT
@@ -14,6 +14,10 @@ Source1:        %{name}-%{version}-aarch64.tar.zst
 Source2:        %{name}-%{version}-docs.tar.gz
 
 BuildRequires:  zstd
+BuildRequires:  systemd-rpm-macros
+Requires(pre):  shadow-utils
+%{?systemd_requires}
+
 ExclusiveArch:  aarch64 x86_64
 
 %description
@@ -34,6 +38,23 @@ tar --zstd -xf %{SOURCE1}
 install -Dpm0755 bin/ollama %{buildroot}%{_bindir}/ollama
 install -d %{buildroot}%{_prefix}/lib
 cp -a lib/ollama %{buildroot}%{_prefix}/lib/
+install -d %{buildroot}%{_unitdir}
+cat > %{buildroot}%{_unitdir}/ollama.service <<'EOF'
+[Unit]
+Description=Ollama Service
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/ollama serve
+User=ollama
+Group=ollama
+Restart=always
+RestartSec=3
+Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+[Install]
+WantedBy=default.target
+EOF
 # Upstream binaries can include "$ORIGIN:/build/llama-server-cpu/bin:".
 # Terminate the dynamic-string entry after "$ORIGIN" so check-rpaths only sees
 # the valid sibling-library lookup path.
@@ -49,13 +70,38 @@ done
 %check
 %{buildroot}%{_bindir}/ollama --version >/dev/null
 
+%pre
+getent group ollama >/dev/null || groupadd -r ollama
+getent passwd ollama >/dev/null || \
+    useradd -r -g ollama -s /bin/false -m -d /usr/share/ollama ollama
+exit 0
+
+%post
+if getent group render >/dev/null 2>&1; then
+    usermod -a -G render ollama || :
+fi
+if getent group video >/dev/null 2>&1; then
+    usermod -a -G video ollama || :
+fi
+%systemd_post ollama.service
+
+%preun
+%systemd_preun ollama.service
+
+%postun
+%systemd_postun_with_restart ollama.service
+
 %files
 %license LICENSE
 %doc README.md
+%{_unitdir}/ollama.service
 %{_bindir}/ollama
 %{_prefix}/lib/ollama/
 
 %changelog
+* Wed Jul 01 2026 Bahram Farahmand <bahram.farahmand.bahram@gmail.com> - 0.30.11-2
+- Add systemd service unit for ollama
+
 * Sat Jun 27 2026 Codex Automation <noreply@users.noreply.github.com> - 0.30.11-1
 - Update to v0.30.11
 
