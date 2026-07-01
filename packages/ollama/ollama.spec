@@ -3,8 +3,8 @@
 %global __requires_exclude_from ^%{_prefix}/lib/ollama/.*$
 
 Name:           ollama
-Version:        0.30.11
-Release:        2%{?dist}
+Version:        0.31.1
+Release:        1%{?dist}
 Summary:        Local LLM runner and API server
 
 License:        MIT
@@ -99,6 +99,9 @@ fi
 %{_prefix}/lib/ollama/
 
 %changelog
+* Wed Jul 01 2026 Codex Automation <noreply@users.noreply.github.com> - 0.31.1-1
+- Update to v0.31.1
+
 * Wed Jul 01 2026 Bahram Farahmand <bahram.farahmand.bahram@gmail.com> - 0.30.11-2
 - Add systemd service unit for ollama
 
