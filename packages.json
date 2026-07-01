@@ -20,7 +20,7 @@
     {
       "chroot_arches": ["aarch64", "x86_64"],
       "name": "gogcli",
-      "project": "gogcli",
+      "project": "ai",
       "subdir": "packages/gogcli",
       "spec": "gogcli.spec",
       "upstream_url": "https://github.com/openclaw/gogcli.git",
@@ -29,7 +29,7 @@
     {
       "chroot_arches": ["aarch64", "x86_64"],
       "name": "wacli",
-      "project": "wacli",
+      "project": "ai",
       "subdir": "packages/wacli",
       "spec": "wacli.spec",
       "upstream_url": "https://github.com/openclaw/wacli.git",
@@ -38,7 +38,7 @@
     {
       "chroot_arches": ["aarch64", "x86_64"],
       "name": "codex",
-      "project": "codex",
+      "project": "ai",
       "subdir": "packages/codex",
       "spec": "codex.spec",
       "upstream_url": "https://github.com/openai/codex.git",
@@ -47,7 +47,7 @@
     {
       "chroot_arches": ["aarch64", "x86_64"],
       "name": "opencode",
-      "project": "opencode",
+      "project": "ai",
       "subdir": "packages/opencode",
       "spec": "opencode.spec",
       "upstream_url": "https://github.com/anomalyco/opencode.git",
@@ -56,7 +56,7 @@
     {
       "chroot_arches": ["aarch64", "x86_64"],
       "name": "ollama",
-      "project": "ollama",
+      "project": "ai",
       "subdir": "packages/ollama",
       "spec": "ollama.spec",
       "upstream_url": "https://github.com/ollama/ollama.git",
@@ -66,7 +66,7 @@
     {
       "chroot_arches": ["aarch64", "x86_64"],
       "name": "claude-code",
-      "project": "claude-code",
+      "project": "ai",
       "subdir": "packages/claude-code",
       "spec": "claude-code.spec",
       "npm_package": "@anthropic-ai/claude-code"
@@ -74,7 +74,7 @@
     {
       "chroot_arches": ["aarch64", "x86_64"],
       "name": "composio",
-      "project": "composio",
+      "project": "ai",
       "subdir": "packages/composio",
       "spec": "composio.spec",
       "upstream_url": "https://github.com/ComposioHQ/composio.git",
@@ -83,7 +83,7 @@
     {
       "chroot_arches": ["aarch64", "x86_64"],
       "name": "nodejs25-caged",
-      "project": "nodejs25-caged",
+      "project": "ai",
       "subdir": "packages/nodejs25-caged",
       "spec": "nodejs25-caged.spec",
       "node_major": 25,
