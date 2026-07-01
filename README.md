@@ -8,14 +8,14 @@ Each package lives in its own subdirectory under `packages/` and is built in its
 
 | Package | Status |
 | --- | --- |
-| `gogcli` | [![Copr build status](https://copr.fedorainfracloud.org/coprs/sureclaw/gogcli/package/gogcli/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/sureclaw/gogcli/package/gogcli/) |
-| `wacli` | [![Copr build status](https://copr.fedorainfracloud.org/coprs/sureclaw/wacli/package/wacli/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/sureclaw/wacli/package/wacli/) |
-| `codex` | [![Copr build status](https://copr.fedorainfracloud.org/coprs/sureclaw/codex/package/codex/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/sureclaw/codex/package/codex/) |
-| `opencode` | [![Copr build status](https://copr.fedorainfracloud.org/coprs/sureclaw/opencode/package/opencode/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/sureclaw/opencode/package/opencode/) |
-| `ollama` | [![Copr build status](https://copr.fedorainfracloud.org/coprs/sureclaw/ollama/package/ollama/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/sureclaw/ollama/package/ollama/) |
-| `claude-code` | [![Copr build status](https://copr.fedorainfracloud.org/coprs/sureclaw/claude-code/package/claude-code/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/sureclaw/claude-code/package/claude-code/) |
-| `composio` | [![Copr build status](https://copr.fedorainfracloud.org/coprs/sureclaw/composio/package/composio/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/sureclaw/composio/package/composio/) |
-| `nodejs25-caged` | [![Copr build status](https://copr.fedorainfracloud.org/coprs/sureclaw/nodejs25-caged/package/nodejs25-caged/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/sureclaw/nodejs25-caged/package/nodejs25-caged/) |
+| `gogcli` | [![Copr build status](https://copr.fedorainfracloud.org/coprs/bahram-f73/gogcli/package/gogcli/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/bahram-f73/gogcli/package/gogcli/) |
+| `wacli` | [![Copr build status](https://copr.fedorainfracloud.org/coprs/bahram-f73/wacli/package/wacli/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/bahram-f73/wacli/package/wacli/) |
+| `codex` | [![Copr build status](https://copr.fedorainfracloud.org/coprs/bahram-f73/codex/package/codex/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/bahram-f73/codex/package/codex/) |
+| `opencode` | [![Copr build status](https://copr.fedorainfracloud.org/coprs/bahram-f73/opencode/package/opencode/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/bahram-f73/opencode/package/opencode/) |
+| `ollama` | [![Copr build status](https://copr.fedorainfracloud.org/coprs/bahram-f73/ollama/package/ollama/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/bahram-f73/ollama/package/ollama/) |
+| `claude-code` | [![Copr build status](https://copr.fedorainfracloud.org/coprs/bahram-f73/claude-code/package/claude-code/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/bahram-f73/claude-code/package/claude-code/) |
+| `composio` | [![Copr build status](https://copr.fedorainfracloud.org/coprs/bahram-f73/composio/package/composio/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/bahram-f73/composio/package/composio/) |
+| `nodejs25-caged` | [![Copr build status](https://copr.fedorainfracloud.org/coprs/bahram-f73/nodejs25-caged/package/nodejs25-caged/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/bahram-f73/nodejs25-caged/package/nodejs25-caged/) |
 
 ## Packages
 
