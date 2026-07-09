@@ -4,7 +4,7 @@
 
 Name:           ollama
 Version:        0.31.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Local LLM runner and API server
 
 License:        MIT
@@ -71,9 +71,9 @@ done
 %{buildroot}%{_bindir}/ollama --version >/dev/null
 
 %pre
-getent group ollama >/dev/null || groupadd -r ollama
-getent passwd ollama >/dev/null || \
-    useradd -r -g ollama -s /bin/false -m -d /usr/share/ollama ollama
+if ! id ollama >/dev/null 2>&1; then
+    useradd -r -s /bin/false -U -m -d /usr/share/ollama ollama
+fi
 exit 0
 
 %post
@@ -99,13 +99,16 @@ fi
 %{_prefix}/lib/ollama/
 
 %changelog
+* Thu Jul 09 2026 Bahram Farahmand <bahram.0098.bf@gmail.com> - 0.31.2-2
+- Align ollama system user creation with upstream install script
+
 * Thu Jul 09 2026 Codex Automation <noreply@users.noreply.github.com> - 0.31.2-1
 - Update to v0.31.2
 
 * Wed Jul 01 2026 Codex Automation <noreply@users.noreply.github.com> - 0.31.1-1
 - Update to v0.31.1
 
-* Wed Jul 01 2026 Bahram Farahmand <bahram.farahmand.bahram@gmail.com> - 0.30.11-2
+* Wed Jul 01 2026 Bahram Farahmand <bahram.0098.bf@gmail.com> - 0.30.11-2
 - Add systemd service unit for ollama
 
 * Sat Jun 27 2026 Codex Automation <noreply@users.noreply.github.com> - 0.30.11-1
