@@ -225,6 +225,9 @@ jobs:
               package_args+=(--arch "$arch")
             done < <(jq -r '.chroot_arches[]?' <<<"$package_json")
             while IFS= read -r distro; do
+              package_args+=(--include-distro "$distro")
+            done < <(jq -r '.chroot_include_distros[]?' packages.json)
+            while IFS= read -r distro; do
               package_args+=(--exclude-distro "$distro")
             done < <(jq -r '.chroot_exclude_distros[]?' packages.json)
             while IFS= read -r distro; do
@@ -245,6 +248,9 @@ jobs:
           while IFS= read -r arch; do
             umbrella_args+=(--arch "$arch")
           done < <(jq -r '.umbrella_chroot_arches[]?' packages.json)
+          while IFS= read -r distro; do
+            umbrella_args+=(--include-distro "$distro")
+          done < <(jq -r '.chroot_include_distros[]?' packages.json)
           while IFS= read -r distro; do
             umbrella_args+=(--exclude-distro "$distro")
           done < <(jq -r '.chroot_exclude_distros[]?' packages.json)

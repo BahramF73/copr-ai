@@ -1,6 +1,11 @@
 {
   "umbrella_project": "ai",
   "umbrella_chroot_arches": ["aarch64", "x86_64"],
+  "chroot_include_distros": [
+    "fedora-43",
+    "fedora-44",
+    "fedora-rawhide"
+  ],
   "chroot_exclude_distros": [
     "epel-7",
     "epel-8",

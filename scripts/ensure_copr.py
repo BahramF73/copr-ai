@@ -30,6 +30,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--instructions")
     parser.add_argument("--runtime-dependency-project", action="append", default=[])
     parser.add_argument("--arch", action="append", default=[])
+    parser.add_argument("--include-distro", action="append", default=[])
     parser.add_argument("--exclude-distro", action="append", default=[])
     parser.add_argument("--package")
     parser.add_argument("--clone-url")
@@ -63,8 +64,17 @@ def distro_is_excluded(distro: str, excluded_distros: list[str]) -> bool:
     return False
 
 
-def list_chroots(arches: list[str], excluded_distros: list[str]) -> list[str]:
+def distro_is_included(distro: str, included_distros: list[str]) -> bool:
+    if not included_distros:
+        return True
+    return any(distro == included or distro.startswith(f"{included}-") for included in included_distros)
+
+
+def list_chroots(
+    arches: list[str], included_distros: list[str], excluded_distros: list[str]
+) -> list[str]:
     selected_arches = set(effective_arches(arches))
+    included_distro_set = set(included_distros)
     excluded_distro_set = set(excluded_distros)
     result = run(["copr-cli", "list-chroots"])
     chroots = []
@@ -74,16 +84,26 @@ def list_chroots(arches: list[str], excluded_distros: list[str]) -> list[str]:
         if not match:
             continue
         distro, arch = match.groups()
-        if arch not in selected_arches or distro_is_excluded(distro, excluded_distros):
+        if (
+            arch not in selected_arches
+            or not distro_is_included(distro, included_distros)
+            or distro_is_excluded(distro, excluded_distros)
+        ):
             continue
         chroots.append(candidate)
     if not chroots:
         arches_text = ", ".join(sorted(selected_arches))
+        included_text = ", ".join(sorted(included_distro_set))
         if excluded_distro_set:
             excluded_text = ", ".join(sorted(excluded_distro_set))
             raise RuntimeError(
                 "no chroots were returned by copr-cli for arches: "
-                f"{arches_text} after excluding distros: {excluded_text}"
+                f"{arches_text} after including distros: {included_text} and excluding distros: {excluded_text}"
+            )
+        if included_distro_set:
+            raise RuntimeError(
+                "no chroots were returned by copr-cli for arches: "
+                f"{arches_text} after including distros: {included_text}"
             )
         raise RuntimeError(f"no chroots were returned by copr-cli for arches: {arches_text}")
     return sorted(set(chroots))
@@ -160,7 +180,7 @@ def ensure_package(args: argparse.Namespace, ref: str) -> None:
 def main() -> int:
     args = parse_args()
     ref = project_ref(args.owner, args.project)
-    chroots = list_chroots(args.arch, args.exclude_distro)
+    chroots = list_chroots(args.arch, args.include_distro, args.exclude_distro)
     ensure_project(args, ref, chroots)
     if args.package:
         ensure_package(args, ref)
