@@ -3,8 +3,8 @@
 %global __requires_exclude_from ^%{_prefix}/lib/ollama/.*$
 
 Name:           ollama
-Version:        0.31.2
-Release:        2%{?dist}
+Version:        0.32.0
+Release:        1%{?dist}
 Summary:        Local LLM runner and API server
 
 License:        MIT
@@ -99,6 +99,9 @@ fi
 %{_prefix}/lib/ollama/
 
 %changelog
+* Tue Jul 14 2026 Codex Automation <noreply@users.noreply.github.com> - 0.32.0-1
+- Update to v0.32.0
+
 * Thu Jul 09 2026 Bahram Farahmand <bahram.0098.bf@gmail.com> - 0.31.2-2
 - Align ollama system user creation with upstream install script
 
