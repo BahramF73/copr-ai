@@ -8,7 +8,7 @@
 %global __os_install_post %{nil}
 
 Name:           claude-code
-Version:        2.1.221
+Version:        2.1.222
 Release:        1%{?dist}
 Summary:        Anthropic Claude Code terminal assistant
 
@@ -46,6 +46,9 @@ install -Dpm0755 %{SOURCE2} %{buildroot}%{_bindir}/claude
 %{_bindir}/claude
 
 %changelog
+* Wed Aug 05 2026 Codex Automation <noreply@users.noreply.github.com> - 2.1.222-1
+- Update to v2.1.222
+
 * Tue Aug 04 2026 Codex Automation <noreply@users.noreply.github.com> - 2.1.221-1
 - Update to v2.1.221
 
