@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 
 Name:           codex
-Version:        0.146.0
+Version:        0.146.1
 Release:        1%{?dist}
 Summary:        Coding agent that runs locally in your terminal
 
@@ -42,6 +42,9 @@ install -Dpm0755 codex %{buildroot}%{_bindir}/codex
 %{_bindir}/codex
 
 %changelog
+* Thu Aug 06 2026 Codex Automation <noreply@users.noreply.github.com> - 0.146.1-1
+- Update to v0.146.1
+
 * Wed Jul 29 2026 Codex Automation <noreply@users.noreply.github.com> - 0.146.0-1
 - Update to v0.146.0
 
