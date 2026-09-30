@@ -3,7 +3,7 @@
 %global __requires_exclude_from ^%{_prefix}/lib/ollama/.*$
 
 Name:           ollama
-Version:        0.34.4
+Version:        0.35.0
 Release:        1%{?dist}
 Summary:        Local LLM runner and API server
 
@@ -99,6 +99,9 @@ fi
 %{_prefix}/lib/ollama/
 
 %changelog
+* Wed Sep 30 2026 Codex Automation <noreply@users.noreply.github.com> - 0.35.0-1
+- Update to v0.35.0
+
 * Fri Sep 25 2026 Codex Automation <noreply@users.noreply.github.com> - 0.34.4-1
 - Update to v0.34.4
 
